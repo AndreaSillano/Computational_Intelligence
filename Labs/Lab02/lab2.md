@@ -12,7 +12,7 @@ The agent is implemented using a genetic algorithm. The genotype of the agent de
 
 ### Genetic Algorithm Components
 
-- **Initialization:** A population of agents with initialized genotypes is created.
+- **Initialization:** A population of agents with random negative integer gene for the row and 0 for the object's gene, is created.
 
 - **Selection:** Agents are selected from the population based on their fitness, their success in playing against a specified opponent.
 
