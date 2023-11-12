@@ -46,8 +46,8 @@ Users can experiment with different agent strategies by adjusting the initial ge
 
 ## Conclusion 
 The agent with genotype [-2,-1] has a winning rate on avarage of 36% against the optimal algorithm.
-![Fitness of Agent vs Optimal over generation](https://example.com/image.jpg)
-![Win rates of 1000 matches divided in 100 games batches](https://example.com/image.jpg)
+![Fitness of Agent vs Optimal over generation](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Labs/Images/fitnessAgentvsOptimal.png)
+![Win rates of 1000 matches divided in 100 games batches](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Labs/Images/winRateAgentvsOptimal.png)
 
 ## Contributing
 Made with the contribuition of Riccardo Renda s310383
