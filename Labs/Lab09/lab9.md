@@ -84,7 +84,7 @@ both always use MR = 0.2 and CR = 0.8 in static configurations
 
 |   |  (1+λ) | (1+λ) rates |(1+λ) Results| (1,λ) | (1,λ) rates  |(1,λ) Results |
 :-------------------------:|:-------------------------: |:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|
-| **mutateFlip, dynamic** | ![](DHMcmu1r.png) | |Fitness call = 60100 <br/> Fitness = 0.28 <br/> Generation level = 3000 | | | Fitness call = 178300 <br/> Fitness = 1.0 <br/> Generation level = 1782|
+| **mutateFlip, dynamic** | ![]([DHMcmu1r.png](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Labs/Lab09/images/VARIABLE_RATES_MUTATION_FLIP_PLUS_ILM.png)) | |Fitness call = 60100 <br/> Fitness = 0.28 <br/> Generation level = 3000 | | | Fitness call = 178300 <br/> Fitness = 1.0 <br/> Generation level = 1782|
 | **mutate, dynamic**|  ![]()| | Fitness call = 60100 <br/> Fitness = 0.62 <br/> Generation level = 3000| | |Fitness call = 7100 <br/> Fitness = 1.0 <br/> Generation level = 70 |
 | **mutateFlip, static**| |![](outputs/output_Biotouch/18-15_02-02-2018/Verification/ITALIC/ITALIC_movementPoints_notbalanced_frrVSfpr.png)  | Fitness call = 60100 <br/> Fitness = 0.27 <br/> Generation level = 3000| | | Fitness call = 58100 <br/> Fitness = 1.0 <br/> Generation level = 580|
 | **mutate, static**|  ![]()| |Fitness call = 60100 <br/> Fitness = 0.31 <br/> Generation level = 3000 | | |Fitness call = 53800 <br/> Fitness = 1.0 <br/> Generation level = 537 |
