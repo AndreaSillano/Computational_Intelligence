@@ -4,15 +4,15 @@ This program implements an evolutionary algorithm based on Evolution Strategies 
 
 ### Definition of Parent Selection Functions:
 
-parent_selection: Implements a tournament among random individuals from the population and returns the best one based on fitness.
+**parent_selection**: Implements a tournament among random individuals from the population and returns the best one based on fitness.
 
 ### Definition of Genetic Operators:
 
-xover: Implements the crossover (recombination) operator between two parents.
-mutateRandom: Implements a mutation operator that randomly changes a bit in the individual's genotype.
-mutateFlip: Implements a mutation operator which flips randomly a bit in the Individual's genotype.
-mutate: Implements a mutation operator that randomly select a bit in the individual's genotype and set it to 1.
-one_cut_xover: Implements a variant of crossover called "one-cut crossover."
+**xover**: Implements the crossover (recombination) operator between two parents.
+**mutateRandom**: Implements a mutation operator that randomly changes a bit in the individual's genotype.
+**mutateFlip**: Implements a mutation operator which flips randomly a bit in the Individual's genotype.
+**mutate**: Implements a mutation operator that randomly select a bit in the individual's genotype and set it to 1.
+**one_cut_xover**: Implements a variant of crossover called "one-cut crossover."
 
 
 ### Implementation of Adaptive Strategies for Mutation and Crossover:
