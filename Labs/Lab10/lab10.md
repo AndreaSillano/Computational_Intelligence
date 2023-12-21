@@ -39,9 +39,9 @@ The computed reward is added to the previous table_score[pos_x][pos_y] only if t
 
 At the end two plot are given:
 - _EPSILON_Decay_: We used an exponential decay. It starts from 1 with a decay = 5
-![]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Labs/Lab10/images/EPSILON_DECAY.png)
 - _Winning_Rate_: In the practice phase we divided all the games in batches of 5000 episodes on which the winning_rate is computed
-![]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Labs/Lab10/images/WINNING%20RATE.png)
 
 ### Human vs. AI Interaction:
 
