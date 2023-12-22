@@ -49,7 +49,7 @@ Once the training is finished, it is possible to store in a file the policy comp
 
 - _Save_policy_: it allows the user to save the policy in a file
 
-- _Load_policy: it allows the user to load the policy from a file
+- _Load_policy_: it allows the user to load the policy from a file
 
 ### Human vs. AI Interaction:
 
