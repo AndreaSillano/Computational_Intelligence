@@ -36,19 +36,35 @@ class GameNode:
         table_index_valid = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24]
         flattened_board = [item for sublist in current_board for item in sublist]
         moves = []
-        for i in table_index_valid:
-            if flattened_board[i] != 1 - ply_id:
-                if i<5:
-                    moves.append((i - 5*(i//5), i//5, Move.BOTTOM)) #first row can go BOTTOM, e.g id = 14 -> (4,2) | x = 14 - 5*14/5 = 14 - 10 = 4
-                                                                                                                #| y = 14/5 = 2
-                if i%5 == 0:
-                    moves.append((i - 5*(i//5), i//5, Move.RIGHT)) #first column can go RIGHT
-
-                if i>19:
-                    moves.append((i - 5*(i//5), i//5, Move.TOP)) #last row can go TOP
-                
-                if i%5 == 4:
-                    moves.append((i - 5*(i//5), i//5, Move.LEFT)) #last column can go LEFT
+        for i in table_index_valid: 
+            if flattened_board[i] != 1 - ply_id: 
+                if i<5: 
+                    moves.append((i - 5*(i//5), i//5, Move.BOTTOM)) #first row can go BOTTOM, e.g id = 14 -> (4,2) | x = 14 - 5*14/5 = 14 - 10 = 4 
+                                                                                                                #| y = 14/5 = 2 
+                    if i!=0 and i!=4: 
+                        moves.append((i - 5*(i//5), i//5, Move.LEFT) )
+                        moves.append((i - 5*(i//5), i//5, Move.RIGHT) )
+                         
+                if i%5 == 0: 
+                    moves.append((i - 5*(i//5), i//5, Move.RIGHT)) #first column can go RIGHT 
+ 
+                    if i!=0 and i!=20: 
+                        moves.append((i - 5*(i//5), i//5, Move.TOP) )
+                        moves.append((i - 5*(i//5), i//5, Move.BOTTOM) )
+ 
+                if i>19: 
+                    moves.append((i - 5*(i//5), i//5, Move.TOP)) #last row can go TOP 
+ 
+                    if i!=20 and i!=24: 
+                        moves.append((i - 5*(i//5), i//5, Move.LEFT) )
+                        moves.append((i - 5*(i//5), i//5, Move.RIGHT) )
+                 
+                if i%5 == 4: 
+                    moves.append((i - 5*(i//5), i//5, Move.LEFT)) #last column can go LEFT 
+ 
+                    if i!=0 and i!=20: 
+                        moves.append((i - 5*(i//5), i//5, Move.TOP) )
+                        moves.append((i - 5*(i//5), i//5, Move.BOTTOM))
 
         return moves
     
