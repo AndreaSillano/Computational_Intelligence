@@ -1,5 +1,6 @@
 import random
 from game import Game, Move, Player
+from gameGym import GameGym
 import randomAgent
 from random import choice, randint
 from scipy.special import softmax
@@ -8,8 +9,9 @@ import math
 from tqdm import tqdm
 import pickle
 import matplotlib.pyplot as plt
+import tableState
 
-TRAINING_PLAY_SIZE = 10000
+TRAINING_PLAY_SIZE = 100000
 LR = 0.3
 DECAY = 5
 EPSILON = 0.05
@@ -25,6 +27,8 @@ class RLPlayer(Player):
         #self.index_table: [[(int, int)]]
         self.epsilon = 1
         self.id = -1
+        self.current_game = []
+        self.table_state = tableState.TableState()
         
         
 
@@ -43,46 +47,62 @@ class RLPlayer(Player):
             # and check if the piece can be moved by the current player
         ) and (board[from_pos] < 0 or board[from_pos] == player_id)
         return acceptable   
-     
-    def make_move(self, game: 'Game') -> tuple[tuple[int, int], Move]:
-        self.id = game.get_current_player()
-        if random.random() < self.epsilon:
+    def make_random_move(self, gameGym: GameGym, board):
             row = random.randint(0,4)
             column = random.randint(0,4)
-            while game.get_board()[row][column] == 1-self.id or not self.__check_border__((row,column),self.id, game.get_board()):
+            while board[row][column] == 1-self.id or not self.__check_border__((row,column),self.id, board):
                 row = random.randint(0,4)
                 column = randint(0,4)
             move = random.choice([Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT])
-            self.table_points[row][column] = (self.table_points[row][column][0], move, 1)
+            if gameGym.slide((row, column), move) and gameGym.take((row, column), self.id):
+                self.table_points[row][column] = ((row,column), move, self.table_points[row][column][2]+1) 
+            return  row, column, move
+    
+    def make_move(self, game: 'Game') -> tuple[tuple[int, int], Move]:
+        self.id = game.get_current_player()
+        gameGym = GameGym(np.array(game.get_board()))
+        current_board = game.get_board()
+        
+
+        if random.random() < self.epsilon:
+            row, column, move = self.make_random_move(gameGym, current_board)
+            self.current_game.append((str(current_board),(row,column,move)))
             return (column, row), move
         else:
-            row,column, move = self.__get__row_column_move__()
+            row,column, move = self.__get__row_column_move__(str(current_board), gameGym, current_board)
             while game.get_board()[row][column] == 1-self.id:
-                row,column, move = self.__get__row_column_move__()
-                
-            self.table_points[row][column] = ((row,column), move, self.table_points[row][column][2]+1)
+                row,column, move = self.__get__row_column_move__(str(current_board), gameGym, current_board)             
+            if gameGym.slide((row, column), move) and gameGym.take((row, column), self.id):   #se la mossa non va bene tornera qua ed io non lho salvata (idem riga 58)
+                self.table_points[row][column] = ((row,column), move, self.table_points[row][column][2]+1)
 
-        return (column,row), move
+        #print((column, row), move)
+        self.current_game.append((str(current_board),(row,column,move)))
+        return (column, row), move
     
-    def __get__row_column_move__(self):
+    def __get__row_column_move__(self, state: str, gameGym, board):
             flattened_table_points_table = [item for sublist in self.table_points for item in sublist]
             table_index_valid = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24]
             table_index = [i for i in  range(25)]
             # Use softmax on the flattened list of probabilities
-            probabilities = softmax([item for sublist in self.table_prob for item in sublist])
-            # Use np.random.choice with the flattened list and probabilities
-            table_element_index = np.random.choice(table_index, p=probabilities)
-            while table_element_index not in table_index_valid:
+            tables = self.table_state.get_state(state)
+            if tables == False:
+                 return self.make_random_move(gameGym, board)
+            else: 
+                table_prob, table_move_prob = tables[0], tables[1]
+                probabilities = softmax([item for sublist in table_prob for item in sublist])
+                # Use np.random.choice with the flattened list and probabilities
                 table_element_index = np.random.choice(table_index, p=probabilities)
+                while table_element_index not in table_index_valid:
+                    table_element_index = np.random.choice(table_index, p=probabilities)
 
-            table_element = flattened_table_points_table[table_element_index]
-           
-            #tableElement  = np.random.choice(self.table_points, p = softmax(self.table_prob))
-            moves = [Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT]
-            row = table_element[0][1]
-            column = table_element[0][0]
-            move = np.random.choice(moves, p = softmax(self.table_move_prob[row][column]))
-            return row, column, move
+                table_element = flattened_table_points_table[table_element_index]
+            
+                #tableElement  = np.random.choice(self.table_points, p = softmax(self.table_prob))
+                moves = [Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT]
+                row = table_element[0][1]
+                column = table_element[0][0]
+                move = np.random.choice(moves, p = softmax(table_move_prob[row][column]))
+                return row, column, move
     
     def _init_table_points(self):
         self.table_points = [[((0,0),0,0) for _ in range(5)] for _ in range(5)]
@@ -144,21 +164,28 @@ class RLPlayer(Player):
         if winner == self.id: 
             MUL = 1
         else:
-             MUL = -1
-        for i in range(5):
-            for j in range(5):
-                #print(self.table_points[i][j])
-                if  self.table_points[i][j][2] >= 1:
-                    reward = ((MUL - self.table_prob[i][j])*LR)/self.table_points[i][j][2]
-                    #reward = 1/(1+math.exp(-reward))
-                    self.table_prob[i][j] = self.table_prob[i][j] + reward*training
-                    used_move = self.table_points[i][j][1]
-                    moves = [Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT]
-                    index_moves = moves.index(used_move)
-                 
-                    self.table_move_prob[i][j][index_moves] = self.table_move_prob[i][j][index_moves] + reward*training
-                    self.table_points[i][j] = (self.table_points[i][j][0], self.table_points[i][j][1], 0)   
-        return reward
+             MUL = -0.4
+        #print(self.table_points) 
+             
+        for i, s in enumerate(self.current_game):
+            t_state = self.table_state.get_state(s[0])
+            if t_state == False:
+                self.table_state.add_or_modify_state(s[0], None, None)
+                t_state = self.table_state.get_state(s[0])
+            row = s[1][0]
+            column =s[1][1]
+            
+            table_prob = t_state[0]
+            table_move_prob = t_state[1] 
+            reward = ((MUL - table_prob[row][column])*LR)/(i+1)
+            table_prob[row][column] = table_prob[row][column]+reward
+            used_move = s[1][2] #((),(0,1,2))
+            moves = [Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT]
+            index_moves = moves.index(used_move)
+            table_move_prob[row][column][index_moves] = table_move_prob[row][column][index_moves] + reward
+
+            self.table_state.add_or_modify_state(s[0], table_prob, table_move_prob)
+            self.current_game =[]
         
     def savePolicy(self):
         fw = open('policy', 'wb')
@@ -168,7 +195,7 @@ class RLPlayer(Player):
         pickle.dump(self.table_move_prob, fw)
         fw.close()
 
-    def loadPolicy(self,file1, file2):
+    def loadPolicy(self, file1, file2):
             self._init_table_points()
             self.epsilon = 0
             fr = open(file1, 'rb')
@@ -185,7 +212,7 @@ class RLPlayer(Player):
             avg_win_hist =[]
             epsilon_hist=[]
             win_counter = 0
-            batch = 1
+            batch = 0
 
             for i in  tqdm(range(TRAINING_PLAY_SIZE)):
                 self.epsilon = 1* math.exp(-((i*DECAY)/(TRAINING_PLAY_SIZE-1)))
@@ -205,7 +232,7 @@ class RLPlayer(Player):
                     win_counter+=1
 
                 if batch == BATCH:
-                    batch = 1
+                    batch = 0
                     avg_win_hist.append((win_counter/(BATCH))*100)
                     win_counter = 0
 
@@ -226,7 +253,17 @@ class RLPlayer(Player):
         #print(self.table_prob)
         win_count = 0
         self.loadPolicy("policy", "policy_move")
-        #print(self.table_prob)
+        for i in range(0, len(self.table_prob)):
+            for j  in range(0, len(self.table_prob[i])):
+                print("[","%.2f" % round(self.table_prob[i][j], 2),"] ", end='')
+            print("")
+
+        print("New Tab")
+        for i in range(0, len(self.table_move_prob)):
+            for j  in range(0,len(self.table_move_prob[i])):
+                print("[",self.table_move_prob[i][j],"] ", end='')
+            print("")
+
         for i in  tqdm(range(TRAINING_PLAY_SIZE)):
             self.__clear_point_table_picks__()
             g = Game()
@@ -247,7 +284,7 @@ class RLPlayer(Player):
         plt.savefig('EPSILON_DECAY')
         plt.show() 
 
-        episode = list(range(1, int(TRAINING_PLAY_SIZE/BATCH) +1))
+        episode = list(range(1, int(TRAINING_PLAY_SIZE/BATCH)+1))
         plt.plot(episode,win, marker='o', linestyle='-', color='r')
         plt.title('Win Rate over Episode')
         plt.xlabel('Episode')
