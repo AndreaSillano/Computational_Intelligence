@@ -105,7 +105,7 @@ Moreover, in the training we compute a reduced number of states in order to avoi
 
 ## MinMax
 
-We also implement MinMax algorithm with alpha-beta pruning, a decision-making algorithm used in two-player games. We already expect minmax to overcome other methods, so we will use it as a comparator for ES and RL. The code defines classes for the game, game tree nodes, and a MinMax player.
+We also implement MinMax algorithm with alpha-beta pruning inspired on poyrazn repository, a decision-making algorithm used in two-player games. We already expect minmax to overcome other methods, so we will use it as a comparator for ES and RL. The code defines classes for the game, game tree nodes, and a MinMax player.
 
 ### Tree Management
 
