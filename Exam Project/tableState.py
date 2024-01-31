@@ -26,21 +26,21 @@ class Entry():
         self.table_prob = [[0 for _ in range(5)] for _ in range(5)]
         self.table_move_prob = [[[0 for _ in range(4)] for _ in range(5)] for _ in range(5)]
         for i in range(5):
-            self.table_prob[0][i] = random.random()
-            self.table_prob[4][i] = random.random()
-            self.table_prob[i][0] = random.random()
-            self.table_prob[i][4] = random.random()
+            self.table_prob[0][i] = 0.1
+            self.table_prob[4][i] =  0.1
+            self.table_prob[i][0] =  0.1
+            self.table_prob[i][4] =  0.1
 
        
-        self.table_move_prob[0][0] = [0,random.random(),0,random.random()]
-        self.table_move_prob[0][4] = [0,random.random(),random.random(),0]
-        self.table_move_prob[4][0] = [random.random(),0,0,random.random()]
-        self.table_move_prob[4][4] = [random.random(),0,random.random(),0]
+        self.table_move_prob[0][0] = [0,0.1,0,0.1]
+        self.table_move_prob[0][4] = [0,0.1,0.1,0]
+        self.table_move_prob[4][0] = [0.1,0,0,0.1]
+        self.table_move_prob[4][4] = [0.1,0,0.1,0]
         for i in range(1,4):
-                    self.table_move_prob[0][i] = [0, random.random(), random.random(), random.random()]
-                    self.table_move_prob[4][i] = [random.random(),0, random.random(), random.random()]
-                    self.table_move_prob[i][0] = [ random.random(), random.random(),0, random.random()]
-                    self.table_move_prob[i][4] = [ random.random(), random.random(), random.random(),0]
+                    self.table_move_prob[0][i] = [0, 0.1, 0.1, 0.1]
+                    self.table_move_prob[4][i] = [0.1,0, 0.1, 0.1]
+                    self.table_move_prob[i][0] = [ 0.1, 0.1,0,0.1]
+                    self.table_move_prob[i][4] = [ 0.1,0.1,0.1,0]
 
 class TableState():
     def __init__(self):
@@ -59,7 +59,21 @@ class TableState():
             return entry.get_entry_c()
         else:  
             return False
+        
+    def get_state_len(self):
+        return len(self.table_state)
 
 
     def hash_state(self, state: str)->str:
         return hashlib.sha256(str(state).encode()).hexdigest()
+    
+    def print_table(self):
+        
+        for k, e in  enumerate(self.table_state):
+            if k == 1:
+                break
+            entry = self.table_state[e].get_entry_c()
+            for i in range(0, len(entry[0])):
+                for j  in range(0, len(entry[0][i])):
+                    print("[","%.2f" % round(entry[0][i][j], 2),"] ", end='')
+                print("")

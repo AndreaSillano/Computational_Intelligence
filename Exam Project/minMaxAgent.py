@@ -19,7 +19,6 @@ class GameNode:
         super().__init__()
         self.game = deepcopy(current_game)
         self.state = current_game.get_board()
-        #add state value
         self.available_moves = available_moves
         self.children = []
         self.move = move
@@ -65,16 +64,15 @@ class GameNode:
                     if i!=0 and i!=20: 
                         moves.append((i - 5*(i//5), i//5, Move.TOP) )
                         moves.append((i - 5*(i//5), i//5, Move.BOTTOM))
-
         return moves
     
-    def __compute_tree__(self):
+    def __compute_tree__(self):        
         for move in self.available_moves:
-            self.game.move((move[0], move[1]), move[2], self.ply_id)
-            child = self.game.get_board()
-            self.__add_children__(GameNode(self.game, move, self.__get_available_moves(self.ply_id, child),self.ply_id, self ))
-
-
+         
+            current_board  = GameGym(np.array(self.game.get_board()))
+            current_board.move((move[0], move[1]), move[2], self.ply_id)
+            child = current_board.get_board()
+            self.__add_children__(GameNode(current_board, move, self.__get_available_moves(self.ply_id if self.parent == None else 1-self.ply_id, child), 1-self.ply_id, self ))
     def __evaluate__(self, matrix, sign):
         # Controlla le righe 
         max_row_count = max([row.count(sign) for row in matrix]) 
@@ -99,9 +97,7 @@ class GameTree:
         if len(current.children) > 0:
             for child in current.children:
                 child.__compute_tree__()
-                for grchild in child.children:
-                    grchild.__compute_tree__()
-                    
+   
 
         
 class minMaxPlayer(Player):
@@ -114,7 +110,7 @@ class minMaxPlayer(Player):
     
     def make_move(self, game: 'Game') -> tuple[tuple[int, int], Move]:
         self.id = game.get_current_player()
-        self.root = GameNode(GameGym(game.get_board()), None, self.__get_available_moves(self.id, game.get_board()), self.id,None) 
+        self.root = GameNode(GameGym(np.array(game.get_board())), None, self.__get_available_moves(self.id, game.get_board()), self.id,None)
         self.game_tree = GameTree(self.root)
         node = self.alpha_beta_search(self.root)
         return (node.move[0], node.move[1]), node.move[2]
@@ -208,3 +204,5 @@ class minMaxPlayer(Player):
     def getUtility(self, node):
         assert node is not None
         return node.value
+    
+  
