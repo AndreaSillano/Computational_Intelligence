@@ -55,7 +55,7 @@ Users can experiment with different agent strategies by adjusting the initial ge
 After the training, the best agent reached a fitness value of 80%.
 Although this result seems promising in the real game it is run dependent. By playing multiple batches of 100 games, the score varies from 54% to 72%.
 The grafic below shows the fitness over training.
-![https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/win.jpg]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/win.jpg)
 
 
 ## RL algorithm
@@ -86,9 +86,9 @@ The reward is then added to the selected table_probabilities table_prob[pos_x][p
 
 At the end two plot are given:
 - _EPSILON_Decay_: We used an exponential decay. It starts from 1 with a decay = 5
-![https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/EPSILON_DECAY.png]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/EPSILON_DECAY.png)
 - _Winning_Rate_: In the practice phase we divided all the games in batches of 100 episodes on which the winning_rate is computed. After this the results are linearly interpolated in order to get a clear view 
-![https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/Win%20Rate.png]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/Win%20Rate.png)
 
 #### Save and Load Policy
 
@@ -123,7 +123,7 @@ We also implement MinMax algorithm with alpha-beta pruning, a decision-making al
 
 ### Conclusion
 After multiple runs the average winrate of MinMax agent is 80% which proves to be the most effective strategy among the proposed ones.
-![https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/minmax.jpg]()
+![](https://github.com/AndreaSillano/Computational_Intelligence/blob/main/Exam%20Project/images/minmax.jpg)
 
 ## General and Final Considerations
 
